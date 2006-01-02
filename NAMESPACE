@@ -1,0 +1,2 @@
+useDynLib(BayesTree)
+export(bart)
