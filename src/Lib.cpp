@@ -63,6 +63,32 @@ double Lib::median(Vec x)
         vec_sz mid = size/2;
         return size%2 == 0 ? (x[mid]+x[mid-1])/2 : x[mid];
 }
+void Lib::sortedUnique(int n, double *x, Vec& uv)
+{
+   uv.clear();
+   if(n==0) return;
+   typedef std::vector<double>::size_type vec_sz;
+
+   //copy x into vector xv
+   Vec xv(n);
+   vec_sz nv = (vec_sz)n;
+   for(vec_sz i=0;i<nv;i++) xv[i] = *(x+i);
+
+   //sort xv
+   std::sort(xv.begin(),xv.end());
+
+   //get unique values of xv into uv
+   uv.push_back(xv[0]);
+   vec_sz nu = 1;
+   double ov = uv[0];
+   for(vec_sz i=1;i<nv;i++) {
+      if(xv[i] != ov) {
+         ov = xv[i];
+         uv.push_back(ov);
+      }
+   }
+
+}
 double Lib::mean(const Vec& x)
 {
         return std::accumulate(x.begin(),x.end(),0.0)/x.size();

@@ -37,6 +37,7 @@ public:
         static void idealmat(int** mat);
 
         static double median(Vec x);
+        static void sortedUnique(int n, double *x, Vec& uv);
         static double mean(const Vec& x);
         static double sdev(const Vec& x);
         static void acov(Vec& x,int nl, Vec& acov, bool cor=true);
