@@ -582,7 +582,8 @@ void Node::currentFits(MuS* mod,int nTrain,double** xTrain,double* yTrain,int nT
         double nodeMu; //draw of mu, for a bottom node
 
         voidP* botvec = GetBotArray(); //bottom nodes
-	int* indPartTest = GetIndPart(nTest,xTest); //partition of test x re bottom nodes
+	int* indPartTest;
+	if(nTest) indPartTest = GetIndPart(nTest,xTest); //partition of test x re bottom nodes
 
 	int nbot = NumBotNodes();
 	int nobTrain=0;
@@ -613,7 +614,7 @@ void Node::currentFits(MuS* mod,int nTrain,double** xTrain,double* yTrain,int nT
 
                 delete [] itr;
 	} //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	delete [] indPartTest;
+	if(nTest) delete [] indPartTest;
         delete [] botvec;
 }
 double** Node::GetEstimates(void* model,int  nTrain,double** xTrain, double** xTrainR, double* yTrain, double* w)

@@ -68,13 +68,15 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
 	   double *iXTest,
 	   double *isigma, int *isigdf, double *isigquant,
 	   double *ikfac,
+	   double *ipower, double *ibase,
 	   int *iNTree, int *indPost, 
 	   int *iprintevery, int *ikeepevery, int *ikeeptrainfits,
-	   int *inumcut,
+	   int *inumcut, int *iusequants, int *iprintcutoffs,
+	   int *verbose,
 	   double *sdraw, double *trdraw, double *tedraw, int *vcdraw)
 {
    GetRNGstate();
-   Rprintf("\n\nRunning BART\n\n");
+   if(*verbose) Rprintf("\n\nRunning BART\n\n");
 
    NumObs = *iNumObs;
    NumX = *iNumX;
@@ -95,13 +97,13 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    int keepevery = *ikeepevery;
    bool keeptrainfits = true;
    if(!(*ikeeptrainfits)) keeptrainfits=false;
-
-   int numcut= *inumcut;
+   bool usequants = true;
+   if(!(*iusequants)) usequants=false;
+   int printcutoffs = *iprintcutoffs;
 
    double musig = .5/(kfac*sqrt((double)NTree)); 
-   if(NTree==1) PriParams.power = 1.0;
-   else PriParams.power=2.0;
-   PriParams.base=.95;
+   PriParams.base = *ibase;
+   PriParams.power = *ipower;
 
    // Pr(sigma < k) = sigquant <=>
    //        lambda = qchisq(1-sigquant,df)*k^2/nu, nu=sigdf
@@ -110,15 +112,19 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    double qchi = qchisq(1.0-sigquant,dsigdf,1,0);
    lambda = (sigma*sigma*qchi)/dsigdf;
 
+   if(*verbose) {
    Rprintf("number of trees: %d\n",NTree);
    Rprintf("Prior:\n");
    Rprintf("\tk: %lf\n",kfac);
    Rprintf("\tdegrees of freedom in sigma prior: %d\n",sigdf);
    Rprintf("\tquantile in sigma prior: %lf\n",sigquant);
+   Rprintf("\tpower and base for tree prior: %lf %lf\n",PriParams.power,PriParams.base);
+   Rprintf("\tuse quantiles for rule cut points: %d\n",usequants);
    Rprintf("data:\n");
    Rprintf("\tnumber of training observations: %d\n",NumObs);
    Rprintf("\tnumber of test observations: %d\n",nrowTest);
    Rprintf("\tnumber of explanatory variables: %d\n\n",NumX);
+   }
 
    Ivec = new int[NumObs+1];
    for(int i=1;i<=NumObs;i++) Ivec[i]=i;
@@ -156,14 +162,82 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    weights = new double[NumObs+1];
    for(int i=1;i<=NumObs;i++) weights[i]=1.0;
    RuleNum = new int[NumX+1];
-   for(int i=1;i<=NumX;i++) RuleNum[i] = numcut;
    RuleMat = new dp [NumX+1];
-   for(int i=1;i<=NumX;i++)
-   {
-      int nr = RuleNum[i];
-      RuleMat[i] = new double[nr+1];
-      for(int j=1;j<=nr;j++) RuleMat[i][j] = -.5 + (j/(1.0+nr));
+
+   int cnq,cfac,cnc,cind,coffset;
+   double maxx,minx,xinc;
+   double* xcol;
+   if(usequants) {
+      Vec xv;
+      for(int i=1;i<=NumX;i++) {
+         Lib::sortedUnique(NumObs,iXDat+((i-1)*NumObs),xv);
+         cnq = (int)xv.size();
+         if(cnq<=(inumcut[i-1]+1)) {
+            cfac = 1;
+            cnc = cnq-1;
+            coffset=0;
+         } else {
+            cnc = inumcut[i-1];
+            cfac = cnq/cnc;
+            coffset = (cfac/2);
+         }
+         RuleNum[i] = cnc; 
+         RuleMat[i] = new double[cnc+1];
+         for(int j=0;j<cnc;j++) {
+            cind = std::min(j*cfac+coffset,cnq-2);
+            RuleMat[i][j+1] = (xv[cind]+xv[cind+1])/2.0;
+         }
+      }
+   } else {
+      for(int i=1;i<=NumX;i++) {
+         xcol = iXDat + ((i-1)*NumObs);
+         maxx = *(std::max_element(xcol,xcol+NumObs));
+         minx = *(std::min_element(xcol,xcol+NumObs));
+         RuleNum[i] = inumcut[i-1];
+         xinc = (maxx-minx)/(RuleNum[i]+1);
+         RuleMat[i] = new double[RuleNum[i]+1];
+         for(int j=1;j<=RuleNum[i];j++) RuleMat[i][j] = minx + j*xinc;
+      }
    }
+   if(*verbose) {
+   Rprintf("\nCutoff rules c in x<=c vs x>c\n");
+   Rprintf("Number of cutoffs: (var: number of possible c):\n");
+   for(int i=1;i<=NumX;i++) {
+      Rprintf("(%d: %d) ",i,RuleNum[i]);
+      if(i%5 ==0) Rprintf("\n");
+   }
+   Rprintf("\n");
+   if(printcutoffs>0) {
+      Rprintf("cutoffs:\n");
+      for(int i=1;i<=NumX;i++) {
+         Rprintf("x(%d) cutoffs: ",i);
+         int j=1;
+         while((j<RuleNum[i]) && (j<printcutoffs) ) {
+            Rprintf("%lf ",RuleMat[i][j]);
+            if(j%5 ==0) Rprintf("\n\t");
+            j+=1;
+         }
+         if((j>2) && (j!=RuleNum[i])) Rprintf("...");
+         Rprintf("%lf",RuleMat[i][RuleNum[i]]);
+         Rprintf("\n");
+      }
+   }
+   Rprintf("\n\n");
+   }
+
+   //temporary: print out rules:
+   /*
+   for(int i=1;i<=NumX;i++) {
+      std::cout << "\n\n";
+      std::cout << "for var: " << i << ", numrules: " << RuleNum[i] << std::endl;
+      std::cout << "cuts:\n";
+      for(int j=1;j<=RuleNum[i];j++) {
+         std::cout << RuleMat[i][j] << "  ";
+         if(j%10 ==0) std::cout << std::endl;
+      }
+   }
+   */
+
    MuS mu;
    mu.setSigma(sigma);
    mu.setPriorS(musig);
@@ -212,15 +286,16 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    int inc=1;
    double mone=-1.0;
    double pone=1.0;
-   double *onev = new double[nrowTest+1];
-   for(int k=1;k<=nrowTest;k++) onev[k]=1.0;
+   double *onev = new double[NTree+1];
+   for(int k=1;k<=NTree;k++) onev[k]=1.0;
    
    time_t tp;
    int time1 = time(&tp);
 
+   if(*verbose) Rprintf("Running mcmc loop:\n");
    for (int k=1;k<=ndPost;k++) {
       //if(k%printevery== 0) std::cout << "iteration: " << k << " (of " << ndPost << ")" << std::endl;
-      if(k%printevery== 0) Rprintf("iteration: %d (of %d)\n",k,ndPost);
+      if(*verbose && (k%printevery== 0)) Rprintf("iteration: %d (of %d)\n",k,ndPost);
       for(nvs i=1;i<theTrees.size();i++) {
          //for(int j=1;j<=NumObs;j++) {
             //YDat1[j] = Y[j]-mtotalfit[j]+mtrainFits[i][j];
@@ -229,7 +304,12 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
          F77_CALL(daxpy)(&NumObs,&mone,mtotalfit+1,&inc,YDat1+1,&inc); //subtract mtotalfit from YDat1
          F77_CALL(daxpy)(&NumObs,&pone,mtrainFits[i]+1,&inc,YDat1+1,&inc);//add mtrainFits[i]
 	 alpha =  Metrop(&theTrees[i],&Done,&step);
-         theTrees[i]->currentFits(&mu,NumObs,XDat,YDat1,nrowTest,XTest,weights,mfits);
+
+	 if(k%keepevery==0)
+            theTrees[i]->currentFits(&mu,NumObs,XDat,YDat1,nrowTest,XTest,weights,mfits);
+	 else
+            theTrees[i]->currentFits(&mu,NumObs,XDat,YDat1,0,XTest,weights,mfits);
+
 	 //for(int j=1;j<=NumObs;j++) mtotalfit[j] += (mfits[1][j]-mtrainFits[i][j]);
          F77_CALL(daxpy)(&NumObs,&mone,mtrainFits[i]+1,&inc,mtotalfit+1,&inc);//sub old fits
          F77_CALL(daxpy)(&NumObs,&pone,mfits[1]+1,&inc,mtotalfit+1,&inc); //add new fits
@@ -262,6 +342,8 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
       }
    }
    int time2 = time(&tp);
+
+   if(*verbose) {
    Rprintf("time for loop: %d\n",time2-time1);
 
    Rprintf("\nTree sizes, last iteration:\n");
@@ -279,6 +361,7 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    }
 
    Rprintf("\nDONE BART\n\n");
+   }
 
    //delete 
    if(nrowTest) {
