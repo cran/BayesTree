@@ -39,10 +39,16 @@ pdbart = function (
    }
    if(is.null(colnames(x.train))) xlbs = paste('x',xind,sep='')
    else xlbs = colnames(x.train)[xind]
+   if('sigma' %in% names(pdbrt)) {
    retval = list(fd = fdr,levs = levs,xlbs=xlbs,
       bartcall=pdbrt$call,yhat.train=pdbrt$yhat.train,
       first.sigma=pdbrt$first.sigma,sigma=pdbrt$sigma,
       yhat.train.mean=pdbrt$yhat.train.mean,sigest=pdbrt$sigest,y=pdbrt$y)
+   } else {
+   retval = list(fd = fdr,levs = levs,xlbs=xlbs,
+      bartcall=pdbrt$call,yhat.train=pdbrt$yhat.train,
+      y=pdbrt$y)
+   }
    class(retval) = 'pdbart'
    if(pl) plot(retval,plquants=plquants)
    return(retval)
