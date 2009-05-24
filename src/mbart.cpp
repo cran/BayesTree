@@ -1,11 +1,13 @@
 #include <fstream>
 #include <cstring>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cmath>
+#include <cstdlib>
 #include <ctime>
 #include <search.h>
 #include <vector>
+#include <valarray>
+#include <algorithm>
 
 extern "C" {
 #include <R.h>
@@ -69,6 +71,7 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
 	   double *isigma, int *isigdf, double *isigquant,
 	   double *ikfac,
 	   double *ipower, double *ibase,
+	   double *ibinary_offset,
 	   int *iNTree, int *indPost, 
 	   int *iprintevery, int *ikeepevery, int *ikeeptrainfits,
 	   int *inumcut, int *iusequants, int *iprintcutoffs,
@@ -76,7 +79,16 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
 	   double *sdraw, double *trdraw, double *tedraw, int *vcdraw)
 {
    GetRNGstate();
-   if(*verbose) Rprintf("\n\nRunning BART\n\n");
+
+   bool binary = (*ibinary_offset > -1000.0);
+   double binary_offset = *ibinary_offset;
+
+   if(*verbose) {
+      if(binary)
+         Rprintf("\n\nRunning BART with binary y\n\n");
+      else
+         Rprintf("\n\nRunning BART with numeric y\n\n");
+   }
 
    NumObs = *iNumObs;
    NumX = *iNumX;
@@ -84,7 +96,12 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
 
    //XDat, YDat, and XTest are copied into other storage below
 
-   double sigma = *isigma;
+   double sigma;
+   if(binary)
+      sigma = 1.0;
+   else
+      sigma = *isigma;
+
    int sigdf = *isigdf;
    double sigquant = *isigquant;
 
@@ -101,7 +118,15 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    if(!(*iusequants)) usequants=false;
    int printcutoffs = *iprintcutoffs;
 
-   double musig = .5/(kfac*sqrt((double)NTree)); 
+   //note: the meaning of kfac is different for binary y 
+   //  for numeric y, it is standardized so E(Y) is probably in (-.5,.5)
+   //  for binary y, it is in (-3,3)
+   double musig;
+   if(binary)
+      musig = 3.0/(kfac*sqrt((double)NTree)); 
+   else
+      musig = .5/(kfac*sqrt((double)NTree)); 
+
    PriParams.base = *ibase;
    PriParams.power = *ipower;
 
@@ -116,8 +141,12 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    Rprintf("number of trees: %d\n",NTree);
    Rprintf("Prior:\n");
    Rprintf("\tk: %lf\n",kfac);
-   Rprintf("\tdegrees of freedom in sigma prior: %d\n",sigdf);
-   Rprintf("\tquantile in sigma prior: %lf\n",sigquant);
+   if(binary) {
+      Rprintf("\tbinary offset is: %lf\n",binary_offset);
+   } else {
+      Rprintf("\tdegrees of freedom in sigma prior: %d\n",sigdf);
+      Rprintf("\tquantile in sigma prior: %lf\n",sigquant);
+   }
    Rprintf("\tpower and base for tree prior: %lf %lf\n",PriParams.power,PriParams.base);
    Rprintf("\tuse quantiles for rule cut points: %d\n",usequants);
    Rprintf("data:\n");
@@ -131,9 +160,9 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    NumY=1;
 
    XDat = Lib::almat(NumObs,NumX);
-   YDat = Lib::almat(NumObs,NumY); 
-   YDat1 = new double[NumObs+1];
-   double *Y = new double[NumObs+1];
+   YDat = Lib::almat(NumObs,NumY); //note: for binary y this the 0-1 y (never changes), for continuous never used
+   YDat1 = new double[NumObs+1];//used for resids in backfitting
+   double *Y = new double[NumObs+1];//used for y in numeric, latent - binary_offset for binary y
 
    int tcnt = 0;
    for(int j=1;j<=NumX;j++) {
@@ -142,11 +171,15 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
               tcnt++;
       }
    }
-   for(int i=0;i<NumObs;i++) {
-      YDat[i+1][1] = iYDat[i];
-      YDat1[i+1] = YDat[i+1][1];
-      Y[i+1] = YDat1[i+1];
+   if(binary) {
+      for(int i=0;i<NumObs;i++) {
+         YDat[i+1][1] = iYDat[i];
+	 Y[i+1] = 2*(iYDat[i]) - 1.0 - binary_offset; //guess at good starting for latents
+      }
+   } else {
+      for(int i=0;i<NumObs;i++) Y[i+1] = iYDat[i];
    }
+
 
    double** XTest = Lib::almat(nrowTest,NumX);
    tcnt = 0;
@@ -320,11 +353,25 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
       }
       //for(int m=1;m<=NumObs;m++) 
       //   eps[m]=YDat[m][1]-mtotalfit[m];
-      F77_CALL(dcopy)(&NumObs,Y+1,&inc,eps+1,&inc);
-      F77_CALL(daxpy)(&NumObs,&mone,mtotalfit+1,&inc,eps+1,&inc);
-      sd.setData(NumObs,eps);
-      sd.drawPost();
-      mu.setSigma(sd.getS());
+      if(!binary) {
+         F77_CALL(dcopy)(&NumObs,Y+1,&inc,eps+1,&inc);
+         F77_CALL(daxpy)(&NumObs,&mone,mtotalfit+1,&inc,eps+1,&inc);
+         sd.setData(NumObs,eps);
+         sd.drawPost();
+         mu.setSigma(sd.getS());
+      }
+      if(binary) {
+         double u,Z;
+         for(int i=1;i<=NumObs;i++) {
+	    u = unif_rand();
+	    if(YDat[i][1] > 0) {
+	       Z = qnorm((1.0-u)*pnorm(-mtotalfit[i]-binary_offset,0.0,1.0,1,0) + u,0.0,1.0,1,0);
+	    } else {
+	       Z = -qnorm((1.0-u)*pnorm(mtotalfit[i]+binary_offset,0.0,1.0,1,0) + u,0.0,1.0,1,0);
+	    }
+	    Y[i] = mtotalfit[i] + Z;
+	 }
+      }
       if(k%keepevery==0) {
          //double sum;
          if(keeptrainfits) {
@@ -336,7 +383,7 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
             //tedraw[tecnt] = sum; tecnt++;
             tedraw[tecnt++] = F77_CALL(ddot)(&NTree,onev+1,&inc,mtestFits[i]+1,&inc);
          }
-         sdraw[scnt] = sd.getS(); scnt++;
+         if(!binary) sdraw[scnt] = sd.getS(); scnt++;
          countVarUsage(theTrees,varcnt);
          for(int i=1;i<=NumX;i++) { vcdraw[vcnt] = varcnt[i]; vcnt++;} 
       }

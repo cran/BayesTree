@@ -9,6 +9,8 @@
    a  plot can be created
    displaying the effect of
    a single variable (\code{pdbart}) or pair of variables (\code{pd2bart}).
+   Note the y is a binary with \eqn{P(Y=1 | x) =F(f(x))} with \eqn{F} the standard
+   normal cdf, then the plots are all on the \eqn{f} scale.
 }
 \usage{
    pdbart(

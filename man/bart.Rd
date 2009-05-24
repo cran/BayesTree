@@ -3,11 +3,14 @@
 \alias{bart}
 \alias{plot.bart}
 \description{
-BART is a Bayesian \dQuote{sum-of-trees} model:
+BART is a Bayesian \dQuote{sum-of-trees} model.\cr
+For numeric response \eqn{y}, we have
 \eqn{y = f(x) + \epsilon}{y = f(x) + e},
-where \eqn{f} is the sum of many tree models
-and \eqn{\epsilon \sim N(0,\sigma^2)}{e ~ N(0,sigma\^2)}.
+where \eqn{\epsilon \sim N(0,\sigma^2)}{e ~ N(0,sigma\^2)}.\cr
+For a binary response \eqn{y}, \eqn{P(Y=1 | x) = F(f(x))}, where \eqn{F}
+denotes the standard normal cdf (probit link).
 
+In both cases, \eqn{f} is the sum of many tree models.
 The goal is to have very flexible inference for the uknown
 function \eqn{f}.
 
@@ -22,6 +25,7 @@ bart(
    sigest=NA, sigdf=3, sigquant=.90,
    k=2.0,
    power=2.0, base=.95,
+   binaryOffset=0,
    ntree=200,
    ndpost=1000, nskip=100,
    printevery=100, keepevery=1, keeptrainfits=TRUE,
@@ -35,26 +39,26 @@ bart(
 \arguments{
    \item{x.train}{
    Explanatory variables for training (in sample) data.\cr
-   Must be a matrix (typeof double)
+   May be a matrix or a data frame,
    with (as usual) rows corresponding to observations and columns to variables.\cr
-   Note that for a categorical variable you need to use dummies and if there
-   are more than two categories, you need to put all the dummies in
-   (unlike linear regression).\cr
+   If a variable is a factor in a data frame, it is replaced with dummies.
+   Note that q dummies are created if q>2 and
+   one dummy is created if q=2, where q is the number of levels of the factor.
+   \code{makeind} is used to generate the dummies.
    \code{bart} will generate draws of \eqn{f(x)} for each \eqn{x}
    which is a row of x.train.
    }
 
    \item{y.train}{
    Dependent variable for training (in sample) data.\cr
-   Must be a vector (typeof double) with length
-   equal to the number of observations
-   (equal to the number of rows of x.train).
+   If y is numeric a continous response model is fit (normal errors).\cr
+   If y is a factor (or just has values 0 and 1) then a binary response model
+   with a probit link is fit.
    }
 
    \item{x.test}{
    Explanatory variables for test (out of sample) data.\cr
-   Must be a (typeof double) matrix with the same
-   number of columns as x.train.\cr
+   Should have same structure as x.train.\cr
    \code{bart} will generate draws of \eqn{f(x)} for each \eqn{x} which is a row of x.test.
    }
 
@@ -65,10 +69,12 @@ bart(
    corresponding standard deviation and a quantile to put this rough estimate at.
    If sigest=NA then the rough estimate will be the usual least squares estimator.
    Otherwise the supplied value will be used.
+   Not used if y is binary.
    }
 
    \item{sigdf}{
    Degrees of freedom for error variance prior.
+   Not used if y is binary.
    }
 
    \item{sigquant}{
@@ -76,12 +82,16 @@ bart(
    The closer the quantile is to 1,
    the more aggresive the fit will be as you are putting more prior weight
    on error standard deviations (\eqn{\sigma}{sigma}) less than the rough estimate.
+   Not used if y is binary.
    }
 
    \item{k}{
-   The number of prior standard deviations \eqn{E(Y|x)} is away from +/-.5.
-   The bigger this value is, the more conservative the fitting will be.
+   For numeric y,
+   k is the number of prior standard deviations \eqn{E(Y|x) = f(x)} is away from +/-.5.
    The response (y.train) is internally scaled to range from -.5 to .5.
+   For binary y,
+   k is the number of prior standard deviations \eqn{f(x)} is away from +/-3.
+   In both cases, the bigger k is, the more conservative the fitting will be.
    }
 
    \item{power}{
@@ -90,6 +100,13 @@ bart(
 
    \item{base}{
    Base parameter for tree prior.
+   }
+
+   \item{binaryOffset}{
+   Used for binary \eqn{y}.\cr
+   The model is \eqn{P(Y=1 | x) = F(f(x) + binaryOffset)}.\cr
+   The idea is that \eqn{f} is shrunk towards 0, so the offset allows you to shrink towards
+   a probability other than .5.
    }
 
    \item{ntree}{
@@ -176,19 +193,18 @@ bart(
    }
 }
 \details{
-   BART is an Bayesian MCMC method for the model \eqn{y = f(x) + \epsilon}{y = f(x) + e},
-   \eqn{\epsilon \sim N(0,\sigma^2)}{e ~ N(0,sigma\^2)}.\cr
+   BART is an Bayesian MCMC method. 
    At each MCMC interation, we produce a draw from the joint posterior
-   \eqn{(f,\sigma) | (x,y)}{(f,sigma) \| (x,y)}.
+   \eqn{(f,\sigma) | (x,y)}{(f,sigma) \| (x,y)} in the numeric \eqn{y} case
+   and just \eqn{f} in the binary \eqn{y} case.
 
    Thus, unlike a lot of other modelling methods in R, we do not produce a single model object
    from which fits and summaries may be extracted.  The output consists of values
-   \eqn{f^*(x)}{f*(x)} and \eqn{\sigma^*}{sigma*} where * denotes a particular draw.
+   \eqn{f^*(x)}{f*(x)} (and \eqn{\sigma^*}{sigma*} in the numeric case) where * denotes a particular draw.
    The \eqn{x} is either a row from the training data (x.train) or the test data (x.test).
 }
 \value{
-   The \code{plot} method sets mfrow to c(1,2) and makes two plots.
-   
+   The \code{plot} method sets mfrow to c(1,2) and makes two plots.\cr
    The first plot is the sequence of kept draws of \eqn{\sigma}{sigma}
    including the burn-in draws.  Initially these draws will decline as BART finds fit
    and then level off when the MCMC has burnt in.\cr
@@ -197,7 +213,7 @@ bart(
    
 
    \code{bart} returns a list assigned class \sQuote{bart}.
-   The list has components:
+   In the numeric \eqn{y} case, the list has components:
 
    \item{yhat.train}{
    A matrix with (ndpost/keepevery) rows and nrow(x.train) columns.
@@ -226,16 +242,27 @@ bart(
    The input dependent vector of values for the dependent variable.\cr
    This is used in plot.bart.
    }
+
+   In the binary \eqn{y} case, the returned list has the components
+   yhat.train, yhat.test, and varcount as above.  In addition the list 
+   has a binaryOffset component giving the value used.
+
+   Note that in the binary \eqn{y}, case yhat.train and yhat.test are
+   \eqn{f(x)} + binaryOffset.  If you want draws of the probability
+   \eqn{P(Y=1 | x)} you need to apply the normal cdf (\code{pnorm})
+   to these values.
 }
 \references{
-Chipman, H., George, E., and McCulloch, R. (2006)
+Chipman, H., George, E., and McCulloch, R. (2009)
    BART: Bayesian Additive Regression Trees.
 
 Chipman, H., George, E., and McCulloch R. (2006)
-   Bayesian Ensemble Learning.
+   Bayesian Ensemble Learning. 
+   Advances in Neural Information Processing Systems 19,
+   Scholkopf, Platt and Hoffman, Eds., MIT Press, Cambridge, MA, 265-272.
 
 both of the above at:
-\url{http://faculty.chicagogsb.edu/robert.mcculloch/research/rob-mcculloch-cv.html}
+\url{http://www.rob-mcculloch.org}
 
 Friedman, J.H. (1991)
    Multivariate adaptive regression splines.
@@ -247,8 +274,8 @@ If the number of test observations was less than the number of trees
 (200 is the default), the yhat.test and yhat.test.mean components were suspect.
 }
 \author{
-Hugh Chipman: \email{hugh.chipman@acadiau.ca}\cr
-Robert McCulloch: \email{robert.mcculloch@chicagogsb.edu}.
+Hugh Chipman: \email{hugh.chipman@gmail.com}\cr
+Robert McCulloch: \email{robert.mcculloch1@gmail.com}.
 }
 \seealso{
 \code{\link{pdbart}}

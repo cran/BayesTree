@@ -1,6 +1,6 @@
 useDynLib(BayesTree)
 
-export(bart,pdbart,pd2bart,plot.bart)
+export(bart,pdbart,pd2bart,plot.bart,makeind)
 
 S3method(plot, bart)
 S3method(plot, pdbart)
