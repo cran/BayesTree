@@ -238,7 +238,7 @@ Rule *GetRulePointer(int index, int curindex, int depth, int curdepth, Node* n)
 	else
 	{
 
-		nn = (int)pow(2,(depth-curdepth));
+	    nn = (int)pow(2.0,(double)(depth-curdepth));
 
 		if(index >= (curindex + nn))
 		{
@@ -280,7 +280,7 @@ int ShannonBanksMetric(Node *top1,Node *top2)
 
 	int depth = (int)max(d1,d2);
 
-	int numnodes = (int)pow(2,depth+1) - 1;
+	int numnodes = (int)pow(2.0,depth+1.0) - 1;
 
 	int index;
 	Rule *r1;
