@@ -3,6 +3,10 @@
 #include "MuS.h"
 #include "Lib.h"
 
+extern "C" {
+#include <R.h>
+};
+
 // public methods -------------------------------------------------
 void MuS::drawPost()
 {
@@ -65,6 +69,8 @@ double* MuS::getFits(int np, double **xpred, int* indpred)
 }
 void MuS::toScreen() const
 {
+   Rprintf("defunct MuS::toScreen called");
+   /*
    std::cout << "MuS EndNodeModel:\n";
    std::cout << "  Normal mean given the standard deviation\n";
    std::cout << "mu: " << mu << " ,sigma: " << std::sqrt(sigma2) << "\n";
@@ -75,4 +81,5 @@ void MuS::toScreen() const
           post_m << " , " << post_s << "\n";
       std::cout << "nob, ybar,s2: " << nob << ", " <<  ybar << ", " << s2 << std::endl;
    }
+   */
 }

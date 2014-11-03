@@ -5,15 +5,22 @@
 
 #include "Lib.h"
 
+extern "C" {
+#include <R.h>
+#include <Rmath.h>
+};
+
 
 //public methods-----------------------------------------------------
 void Lib::printVec(std::vector<int>& iv)
 {
-        for(std::vector<int>::const_iterator it = iv.begin(); it !=iv.end(); it++) std::cout << *it << std::endl;
+      Rprintf("defunct Lib::printVec");
+        //for(std::vector<int>::const_iterator it = iv.begin(); it !=iv.end(); it++) std::cout << *it << std::endl;
 }
 void Lib::printVec(Vec& v)
 {
-        for(Vec::const_iterator it = v.begin(); it !=v.end(); it++) std::cout << *it << std::endl;
+      Rprintf("defunct Lib::printVec");
+        //for(Vec::const_iterator it = v.begin(); it !=v.end(); it++) std::cout << *it << std::endl;
 }
 void Lib::printVec(Vec& v , char* fname)
 {
@@ -24,9 +31,9 @@ double** Lib::almat(long n, long m)
 {
         double *temp,**p;
         temp = new double [n*(m+1)];
-        if(!temp) printf("allocation error for temp in almat\n");
+        if(!temp) Rprintf("allocation error for temp in almat\n");
         p = new dp [n+1];
-        if(!p) printf("allocation error for p in almat\n");
+        if(!p) Rprintf("allocation error for p in almat\n");
         for(int i=1; i<=n; i++) *(p+i) = temp + (m+1)*(i-1);
         return p;
 }
@@ -39,9 +46,9 @@ int** Lib::ialmat(long n, long m)
 {
         int *temp,**p;
         temp = new int [n*(m+1)];
-        if(!temp) printf("allocation error for temp in ialmat\n");
+        if(!temp) Rprintf("allocation error for temp in ialmat\n");
         p = new ip [n+1];
-        if(!p) printf("allocation error for p in almat\n");
+        if(!p) Rprintf("allocation error for p in almat\n");
         for(int i=1; i<=n; i++) *(p+i) = temp + (m+1)*(i-1);
         return p;
 }

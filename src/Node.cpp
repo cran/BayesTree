@@ -17,6 +17,11 @@
 
 #include "Prior.h"
 
+extern "C" {
+#include <R.h>
+#include <Rmath.h>
+};
+
 typedef double *dp;
 
 double Rule::SplitVal()
@@ -88,7 +93,7 @@ int Rule::Right(double *x)
 				}
 			}
 		}
-		printf("error in Rule::Right, no match found for cat varialble\n");
+		//printf("error in Rule::Right, no match found for cat varialble\n");
 		return 0;
 		
 	
@@ -216,6 +221,8 @@ Node::~Node()
 
 void Node::PrintTree()
 {
+         Rprintf("defunct call to Node::PrintTree");
+        /*
 	int i;
 	int d;
 
@@ -247,10 +254,13 @@ void Node::PrintTree()
 		RightC->PrintTree();
 	}
 
+   */
 }
 
 void Node::PrintTree(FILE *out)
 {
+         Rprintf("defunct call to Node::PrintTree");
+         /*
 	int i;
 	int d;
 
@@ -282,12 +292,15 @@ void Node::PrintTree(FILE *out)
 		LeftC->PrintTree(out);
 		RightC->PrintTree(out);
 	}
+       */
 
 }
 
 void Node::PrintBernTree(FILE *out)
 {
-int i;
+        Rprintf("defunct Node::PrintBernTree");
+        /*
+        int i;
 	int d;
 
 	d=Depth(this);
@@ -317,6 +330,7 @@ int i;
 		RightC->PrintBernTree(out);
 	}
 
+         */
 }
 
 
@@ -756,12 +770,12 @@ int AddChildsInd(Node *n,int var,int cut)
 
 	if(VarType[var]!=ORD)
 	{
-		printf("AddChilds: error, VarType!=ORD");
+		Rprintf("AddChilds: error, VarType!=ORD");
 		return 0;
 	}
 	if((n->Bot)!=1)
 	{
-		printf("AddChilds: error, node not bottom");
+		Rprintf("AddChilds: error, node not bottom");
 		return 0;
 	}
 
@@ -769,12 +783,12 @@ int AddChildsInd(Node *n,int var,int cut)
 	GetSplitInterval(&LeftI,&RightI,n,var);
 	if(cut<LeftI) 
 	{
-		printf("AddChilds: error, cut<LeftI");
+		Rprintf("AddChilds: error, cut<LeftI");
 		return 0;
 	}
 	if(cut>RightI)
 	{
-		printf("AddChilds: error, cut>LeftI");
+		Rprintf("AddChilds: error, cut>LeftI");
 		return 0;
 	}
 	
@@ -837,10 +851,13 @@ void getVarUsage(Node* node, int depth, int nodeIndex, std::vector<VarUsage>& vu
 
 void printVarUsageVector(const std::vector<VarUsage>& vs)
 {
+   Rprintf("defunct call to printVarUsageVector");
+   /*
    std::cout << "Printing Variable Usage Vector:\n";
    std::cout << "Depth\tNode\tVariable\n";
    for(std::vector<VarUsage>::size_type i=0;i!=vs.size();i++) 
       std::cout << vs[i].depth << "\t" << vs[i].nodeIndex << "\t" << vs[i].varIndex << "\n";
+   */
 }
 
 

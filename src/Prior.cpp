@@ -31,7 +31,7 @@ void GetSplitInterval(int *LeftI, int *RightI, Node *curr,int VarI)
 	
 	// make sure the variable is ordered
 	if(!(VarType[VarI]==ORD)) {
-		printf("error in GetSplitInterval: variable not ordered\n");
+		Rprintf("error in GetSplitInterval: variable not ordered\n");
 	} else {
 
 	int Lfound=0;// flag to keep track if you have found LeftI
@@ -73,7 +73,7 @@ void GetSetCats(Node *curr,int VarI, int *cats)
 	int i;
 	Node *dad;
 
-	if(!(VarType[VarI]==CAT)) printf("error in GetSetCats: not a CAT variable\n");
+	if(!(VarType[VarI]==CAT)) Rprintf("error in GetSetCats: not a CAT variable\n");
 	
 
 	int NR = RuleNum[VarI];
@@ -128,7 +128,7 @@ double PGrow(Node *n)
 int SpawnChildren(Node *n,int LeftEx,int RightEx)
 {
 	if(!(n->rule).Var) {
-		printf("error in SpawnChildren: rule not set\n");
+		Rprintf("error in SpawnChildren: rule not set\n");
 		return -1;
 	}
 
@@ -225,7 +225,7 @@ void DrPriRule(int VarI,Node *GNode,int *LeftEx,int *RightEx)
 		Ncat=0;
 		for(i=1;i<=NR;i++) Ncat += cats[i];
 		if(Ncat<2) {
-			printf("error in DrPriRule: less than 2 values left for cat var\n");
+			Rprintf("error in DrPriRule: less than 2 values left for cat var\n");
 			delete [] cats;
 		
 		}
@@ -265,7 +265,7 @@ void DrPriRule(int VarI,Node *GNode,int *LeftEx,int *RightEx)
 		GetSplitInterval(&LeftI,&RightI,GNode,VarI);
 		numsplit = RightI-LeftI+1;
 		if(numsplit ==0) {
-			printf("error in DrPriRule: no splits left for ordered var\n");
+			Rprintf("error in DrPriRule: no splits left for ordered var\n");
 			
 		}
 		

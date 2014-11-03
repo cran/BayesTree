@@ -253,16 +253,15 @@ bart(
    to these values.
 }
 \references{
-Chipman, H., George, E., and McCulloch, R. (2009)
-   BART: Bayesian Additive Regression Trees.
+Chipman, H., George, E., and McCulloch R. (2010)
+   Bayesian Additive Regression Trees.
+   \emph{The Annals of Applied Statistics}, \bold{4,1}, 266-298.
+
 
 Chipman, H., George, E., and McCulloch R. (2006)
    Bayesian Ensemble Learning. 
    Advances in Neural Information Processing Systems 19,
    Scholkopf, Platt and Hoffman, Eds., MIT Press, Cambridge, MA, 265-272.
-
-both of the above at:
-\url{http://www.rob-mcculloch.org}
 
 Friedman, J.H. (1991)
    Multivariate adaptive regression splines.
@@ -275,7 +274,7 @@ If the number of test observations was less than the number of trees
 }
 \author{
 Hugh Chipman: \email{hugh.chipman@gmail.com}\cr
-Robert McCulloch: \email{robert.mcculloch1@gmail.com}.
+Robert McCulloch: \email{robert.e.mcculloch@gmail.com}.
 }
 \seealso{
 \code{\link{pdbart}}
@@ -294,7 +293,7 @@ y=Ey+sigma*rnorm(n)
 lmFit = lm(y~.,data.frame(x,y)) #compare lm fit to BART later
 ##run BART
 set.seed(99)
-bartFit = bart(x,y)
+bartFit = bart(x,y,ndpost=200) #default is ndpost=1000, this is to run example fast.
 plot(bartFit) # plot bart fit
 ##compare BART fit to linear matter and truth = Ey
 fitmat = cbind(y,Ey,lmFit$fitted,bartFit$yhat.train.mean)

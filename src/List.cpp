@@ -6,6 +6,11 @@
 
 typedef void *voidP;
 
+extern "C" {
+#include <R.h>
+#include <Rmath.h>
+};
+
 
 
 class Cell {
@@ -97,19 +102,20 @@ void PrintList(List *list)
 
 	Cell *cell;
 	int n=(*list).length;
-	printf("\n the length of the list is %d\n",n);
+	Rprintf("\n the length of the list is %d\n",n);
 	
 	if(n>0) {
-	printf("the pointer contents and status values are:\n");
+	Rprintf("the pointer contents and status values are:\n");
 	cell =(*list).first;
-	printf(" %p %d %d\n",cell->contents,cell->Beg,cell->End);
+	Rprintf(" %p %d %d\n",cell->contents,cell->Beg,cell->End);
 	
 	for(int i=1;i<n;i++) {
 		cell=(*cell).after;
-		printf(" %p %d %d\n",cell->contents,cell->Beg,cell->End);
+		Rprintf(" %p %d %d\n",cell->contents,cell->Beg,cell->End);
 		
 	}
-	std::cout << "\n";
+	//std::cout << "\n";
+        Rprintf("\n");
 	}
 }	
 

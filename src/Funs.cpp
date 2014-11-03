@@ -384,9 +384,9 @@ int AndrewsMetric(Node *top1,Node *top2)
 void AddDatChildren(Node *n)
 {
 	if(!(n->rule).Var) 
-		printf("error in AddDatChildren: rule not set\n");
+		Rprintf("error in AddDatChildren: rule not set\n");
 	if(((n->LeftC)->DataList.length!=0) || ((n->RightC)->DataList.length!=0))
-		printf("error in AddDatChildren: data already set\n");
+		Rprintf("error in AddDatChildren: data already set\n");
 
 	int *divec;
 	int nob;
@@ -536,7 +536,7 @@ void RestrictSize(Node **n,int min)
 
 	
 
-		printf("%d\n",(*n)->DataList.length);
+		Rprintf("%d\n",(*n)->DataList.length);
 
 	else {
 
@@ -544,7 +544,7 @@ void RestrictSize(Node **n,int min)
 
 		RestrictSize(&((*n)->RightC),min);
 
-		printf("%d\n",(*n)->DataList.length);
+		Rprintf("%d\n",(*n)->DataList.length);
 
 	}
 

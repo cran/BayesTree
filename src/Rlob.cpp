@@ -5,6 +5,11 @@
 
 #include "Rlob.h"
 
+extern "C" {
+#include <R.h>
+#include <Rmath.h>
+};
+
 typedef double *dp;
 typedef int *ip;
 
@@ -12,9 +17,9 @@ double **almat(long n, long m)
 {
 	double *temp,**p;
 	temp = new double [n*(m+1)];
-	if(!temp) printf("allocation error for temp in almat\n");
+	if(!temp) Rprintf("allocation error for temp in almat\n");
 	p = new dp [n+1];
-	if(!p) printf("allocation error for p in almat\n");
+	if(!p) Rprintf("allocation error for p in almat\n");
 	for(int i=1; i<=n; i++) *(p+i) = temp + (m+1)*(i-1);
 	return p;
 }
@@ -29,9 +34,9 @@ int **ialmat(long n, long m)
 {
 	int *temp,**p;
 	temp = new int [n*(m+1)];
-	if(!temp) printf("allocation error for temp in ialmat\n");
+	if(!temp) Rprintf("allocation error for temp in ialmat\n");
 	p = new ip [n+1];
-	if(!p) printf("allocation error for p in almat\n");
+	if(!p) Rprintf("allocation error for p in almat\n");
 	for(int i=1; i<=n; i++) *(p+i) = temp + (m+1)*(i-1);
 	return p;
 }
@@ -46,14 +51,14 @@ void idealmat(int **m)
 void print_mat(long n,double **m)
 {
 	int i,j;
-	printf("\n");
+	Rprintf("\n");
 	for(i=1;i<=n;i++) {
 		for(j=1;j<=n;j++) {
-			printf("%f ",m[i][j]);
+			Rprintf("%f ",m[i][j]);
 		}
-		printf("\n");
+		Rprintf("\n");
 	}
-	printf("\n");
+	Rprintf("\n");
 }
 
 void print_mat(FILE *fp,long n,double **m)
@@ -72,33 +77,33 @@ void print_mat(FILE *fp,long n,double **m)
 void print_mat(long n,long k,double **m)
 {
 	int i,j;
-	printf("\n");
+	Rprintf("\n");
 	for(i=1;i<=n;i++) {
 		for(j=1;j<=k;j++) {
-			printf("%f ",m[i][j]);
+			Rprintf("%f ",m[i][j]);
 		}
-		printf("\n");
+		Rprintf("\n");
 	}
-	printf("\n");
+	Rprintf("\n");
 }
 
 void print_mat(FILE *fp,long n,long k,double **m)
 {
 	int i,j;
-	//printf("\n");
+	//Rprintf("\n");
 	for(i=1;i<=n;i++) {
 		for(j=1;j<=k;j++) {
 			fprintf(fp,"%f ",m[i][j]);
 		}
 		fprintf(fp,"\n");
 	}
-	//printf("\n");
+	//Rprintf("\n");
 }
 
 void print_vec(long n,double *vec)
 {
 	int i;
-	for(i=1;i<=n;i++) printf("%f\n",vec[i]);
+	for(i=1;i<=n;i++) Rprintf("%f\n",vec[i]);
 }
 void print_vec(FILE *fp,long n,double *vec)
 {
@@ -212,7 +217,7 @@ void choldc(double **a, int n, double p[])
                         for (sum=a[i][j],k=i-1;k>=1;k--) sum -= a[i][k]*a[j][k];
                         if (i == j) {
                                 if (sum <= 0.0)
-                                        printf("choldc failed\n");
+                                        Rprintf("choldc failed\n");
                                 p[i]=sqrt(sum);
                         } else a[j][i]=sum/p[i];
                 }

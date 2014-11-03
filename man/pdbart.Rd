@@ -217,13 +217,13 @@ par(mfrow=c(1,3)) #first two for pdbart, third for pd2bart
 set.seed(99)
 pdb1 = pdbart(x,y,xind=c(1,2),
    levs=list(seq(-1,1,.2),seq(-1,1,.2)),pl=FALSE,
-   keepevery=10,ntree=100)
+   keepevery=10,ntree=100,nskip=100,ndpost=200) #should run longer!
 plot(pdb1,ylim=c(-.6,.6))
 ##pd2bart: two dimensional partial dependence plot
 set.seed(99)
 pdb2 = pd2bart(x,y,xind=c(2,3),
    levquants=c(.05,.1,.25,.5,.75,.9,.95),pl=FALSE,
-   ntree=100,keepevery=10,verbose=FALSE)
+   ntree=100,keepevery=10,verbose=FALSE,nskip=100,ndpost=200) #should run longer!
 plot(pdb2)
 ##compare BART fit to linear model and truth = Ey
 fitmat = cbind(y,Ey,lmFit$fitted,pdb1$yhat.train.mean)

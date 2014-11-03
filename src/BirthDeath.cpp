@@ -129,7 +129,7 @@ double PrBotNode(Node *top,Node *node)
 		}
 	}
 
-	if(PrNode==-1) printf("error in PrBotNode: node not found in botnode list\n");
+	if(PrNode==-1) Rprintf("error in PrBotNode: node not found in botnode list\n");
 
 	delete [] probs;
 	delete [] botvec;

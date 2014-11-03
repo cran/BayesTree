@@ -75,7 +75,7 @@ void FindGoodOrdRules(Node *n,int VarI, int &l, int &u)
 void OrdFindMinMax(Node *n,int VarI, int *min, int *max)
 //used to find good ord rule, go down tree adjusting min and max whenever VarI is used
 {
-	if(VarType[VarI]==CAT) printf("error in OrdFindMinMax, CAT var\n");
+	if(VarType[VarI]==CAT) Rprintf("error in OrdFindMinMax, CAT var\n");
 
 	if(!(n->Bot)) {
 		if(VarI == ((n->rule).Var)) {
@@ -108,7 +108,7 @@ void FindGoodCatRules(Node *n,int VarI, int *RuleInd,int &firstone)
 	GetSetCats(n,VarI,cats);
 	firstone = FirstOne(NR,cats);
 	if(!firstone) {
-		printf("error in FindGoodCatRule: no availble cats\n");
+		Rprintf("error in FindGoodCatRule: no availble cats\n");
 	} else {
 		sel[firstone]=1;
 	}

@@ -40,7 +40,7 @@ typedef EndNodeModel* EndNodeModelP;
 //define global variables -----------------------------------------------------------
 int NumX; // number of x variables
 int NumY; //number of y variables
-int *VarType; // for each variable tell what kind, CAT or ORD
+int *VarType=0; // for each variable tell what kind, CAT or ORD
 int NumObs; // number of observations
 double **XDat; // x data, note: cats are double
 double **YDat; // y data, note: cats are double
@@ -398,7 +398,7 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
       Rprintf("%d ",theTrees[i]->NumBotNodes());
       if(i%20 == 0) Rprintf("\n");
    }
-   std::cout << "\n\n";
+   //std::cout << "\n\n";
 
    Rprintf("Variable Usage, last iteration (var:count):\n");
    countVarUsage(theTrees,varcnt);
@@ -407,7 +407,7 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
       if(i%5 == 0) Rprintf("\n");
    }
 
-   Rprintf("\nDONE BART\n\n");
+   Rprintf("\nDONE BART 11-2-2014\n\n");
    }
 
    //delete 
@@ -421,18 +421,19 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    delete [] YDat1;
    delete [] Y;
    delete [] Ivec;
-   delete [] VarType;
    delete [] weights;
    delete [] RuleNum;
    for(int i=1;i<=NumX;i++) delete [] RuleMat[i];
    delete [] RuleMat;
    for(nvs i=1;i<theTrees.size();i++)
       theTrees[i]->deall();
+   
    delete [] eps;
    delete [] mtotalfit;
    delete [] mfits[1];
    delete [] mfits[2];
    delete [] mfits;
+   if(VarType) delete [] VarType;
 
    PutRNGstate();
 }

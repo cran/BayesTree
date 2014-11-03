@@ -178,7 +178,7 @@ double SwapRule(Node *top,int *Done)
 		Node *kid;
 		if((dad->LeftC)->rule.Var) lI=1;
 		if((dad->RightC)->rule.Var) rI=1;
-		if(!(lI+rI)) printf("error in SwapRule: neither child of dad has a rule\n");
+		if(!(lI+rI)) Rprintf("error in SwapRule: neither child of dad has a rule\n");
 	
 		if((lI+rI)==2) {
 			//u=ran1(&idum);
