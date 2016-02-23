@@ -1,13 +1,17 @@
-#include <stdio.h>
+//#include <stdio.h>
+#include <cstdio>
 #include <iostream>
-#include <math.h>
-#include <stdlib.h>
-#include <time.h>
+//#include <math.h>
+#include <cmath>
+//#include <stdlib.h>
+#include <cstdlib>
+//#include <time.h>
+#include <ctime>
 
-extern "C" {
+//extern "C" {
 #include <R.h>
 #include <Rmath.h>
-};
+//};
 
 
 #include "global.h"

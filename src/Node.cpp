@@ -1,8 +1,11 @@
-#include <stdio.h>
+//#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
-#include <math.h>
-#include <stdlib.h>
+//#include <math.h>
+#include <cmath>
+//#include <stdlib.h>
+#include <cstdlib>
 #include "MuS.h"
 
 #include "global.h"
@@ -17,10 +20,10 @@
 
 #include "Prior.h"
 
-extern "C" {
+//extern "C" {
 #include <R.h>
 #include <Rmath.h>
-};
+//};
 
 typedef double *dp;
 

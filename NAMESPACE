@@ -3,6 +3,8 @@ useDynLib(BayesTree)
 export(bart,pdbart,pd2bart,plot.bart,makeind)
 
 importFrom(nnet,class.ind)
+importFrom("graphics", "abline", "contour", "image", "lines", "par","plot", "title")
+importFrom("stats", "lm", "pnorm", "quantile")
 
 S3method(plot, bart)
 S3method(plot, pdbart)

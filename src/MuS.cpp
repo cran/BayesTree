@@ -3,9 +3,9 @@
 #include "MuS.h"
 #include "Lib.h"
 
-extern "C" {
+//extern "C" {
 #include <R.h>
-};
+//};
 
 // public methods -------------------------------------------------
 void MuS::drawPost()

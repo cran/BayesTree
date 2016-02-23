@@ -6,10 +6,10 @@
 #include <vector>
 #include <cstring>
 
-extern "C" {
+//extern "C" {
 #include <R.h>
 #include <Rmath.h>
-};
+//};
 
 #include <cstdio>
 #include <cmath>

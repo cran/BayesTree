@@ -12,7 +12,7 @@ public:
 	~Sdev() {}
 	// get set
 	double getS() { return this->s;}
-	void setS(double s) { this->s = fabs(s);}
+	void setS(double s) { this->s = std::abs(s);}
 	// public methods
 	void setPrior(int nu, double lambda) {this->nu = nu; this->lambda = lambda;}
 	void setData(int nob, double* e) { this->nob = nob; this->e = e;}

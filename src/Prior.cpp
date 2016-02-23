@@ -1,7 +1,7 @@
-extern "C" {
+//extern "C" {
 #include <R.h>
 #include <Rmath.h>
-};
+//};
 
 
 #include "global.h"

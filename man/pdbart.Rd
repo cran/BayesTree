@@ -185,22 +185,13 @@
    \code{pd2bart} to examine the BART run.
 }
 \references{
-Chipman, H., George, E., and McCulloch, R. (2006)
-   BART: Bayesian Additive Regression Trees.
-
-Chipman, H., George, E., and McCulloch R. (2006)
-   Bayesian Ensemble Learning.
-
-both of the above at:
-\url{http://faculty.chicagogsb.edu/robert.mcculloch/research/rob-mcculloch-cv.html}
-
-Friedman, J.H. (2001)
-   Greedy function approximation: A gradient boosting machine.
-     \emph{The Annals of Statistics}, \bold{29}, 1189--1232.
+Chipman, H., George, E., and McCulloch R. (2010)
+   Bayesian Additive Regression Trees.
+   \emph{The Annals of Applied Statistics}, \bold{4,1}, 266-298.
 }
 \author{
-Hugh Chipman: \email{hugh.chipman@acadiau.ca}.\cr
-Robert McCulloch: \email{robert.mcculloch@chicagogsb.edu}.
+Hugh Chipman: \email{hugh.chipman@gmail.com}.\cr
+Robert McCulloch: \email{robert.e.mcculloch@gmail.com}.
 }
 \examples{
 ##simulate data 

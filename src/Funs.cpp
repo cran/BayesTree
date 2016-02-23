@@ -1,7 +1,7 @@
-extern "C" {
+//extern "C" {
 #include <R.h>
 #include <Rmath.h>
-};
+//};
 
 
 #include "global.h"
@@ -369,7 +369,7 @@ int AndrewsMetric(Node *top1,Node *top2)
 			Isame1 = (ind1[i]==ind1[j])?1: 0;
 			Isame2 = (ind2[i]==ind2[j])?1: 0;
 
-			count += abs(Isame1-Isame2);
+			count += std::abs(Isame1-Isame2);
 
 		}
 	}
