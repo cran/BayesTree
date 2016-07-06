@@ -10,10 +10,10 @@
 
 typedef void *voidP;
 
-extern "C" {
+// extern "C" {
 #include <R.h>
 #include <Rmath.h>
-};
+// };
 
 
 

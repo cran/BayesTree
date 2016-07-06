@@ -1,4 +1,4 @@
-6bc039b9fd02676c267f4ec4ac5d34f8 *DESCRIPTION
+16951ba77bddf0521a87c6c1b3d2c4db *DESCRIPTION
 40add81328647ad1232a35a2b9161a90 *NAMESPACE
 e44e678d5e314ab05225896e310443ad *R/bart.R
 cf8cf403ba32c5905bd59ed6759fbba8 *R/makeind.R
@@ -22,7 +22,7 @@ f76cfc58e8f68aaee885c83ad99f5cfd *src/Lib.cpp
 568b45c944772ee820fe259be948cecf *src/Lib.h
 6a09b6bc9fe526ef1c641f31298be7b9 *src/Likelihood.cpp
 2cb697b83c4e40b649ef7e465fd25edd *src/Likelihood.h
-ae88f9e5e9bd5bc49c5319a48f365474 *src/List.cpp
+e2362fd72e415fc17917d0f25c1df14f *src/List.cpp
 5d6c58ea05d37ff1861cddce4fd59c4e *src/List.h
 6c9b81d01913f23a28ebdd7efade0ae4 *src/Makevars.win
 9ba6caabddb8643aecbfe7a480bdec72 *src/MuS.cpp
