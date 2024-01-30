@@ -268,7 +268,7 @@ Friedman, J.H. (1991)
         \emph{The Annals of Statistics}, \bold{19}, 1--67.
 }
 \note{
-\emph{There was a bug in BayesTree\_0.1-0} (now fixed of course).\cr
+\emph{There was a bug in BayesTree_0.1-0} (now fixed of course).\cr
 If the number of test observations was less than the number of trees
 (200 is the default), the yhat.test and yhat.test.mean components were suspect.
 }

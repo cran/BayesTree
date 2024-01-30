@@ -1,4 +1,4 @@
-16951ba77bddf0521a87c6c1b3d2c4db *DESCRIPTION
+453d1de414f349747047cc4b38b00cd0 *DESCRIPTION
 40add81328647ad1232a35a2b9161a90 *NAMESPACE
 e44e678d5e314ab05225896e310443ad *R/bart.R
 cf8cf403ba32c5905bd59ed6759fbba8 *R/makeind.R
@@ -7,7 +7,7 @@ f0e97e46837324a060cbd2152a93431c *R/pdbart.R
 3d880f5f4526b80c801679c76ebb77b6 *R/plot.bart.R
 50972b52d8d0aa19bf43a4993ae64ec6 *R/plot.pd2bart.R
 3ad85d7b71d5cb7e9f1116b7a4ef2e6c *R/plot.pdbart.R
-18c00e0342d4f5088b2e23990c8e9b17 *man/bart.Rd
+00190dc3e8a22e60cb37637e3a3552a3 *man/bart.Rd
 bf1de7788ccbc9e97b2c41b21684a143 *man/makeind.Rd
 d0549047e59b83462db090d1b99273fd *man/pdbart.Rd
 7852a52ecf94b13e3add1f189e7f3231 *src/BirthDeath.cpp
@@ -37,4 +37,4 @@ dfb01a2f7ae0f7f441db550109be44b8 *src/Rlob.h
 616338f0110a2978d4c53d1fc55cc214 *src/Swap.cpp
 33c7f861ed296403ea6732c5e7383b40 *src/Swap.h
 d2df5792c4787d879c72421ba3646bab *src/global.h
-c55136d9584d77e6cde229abcec8e8b0 *src/mbart.cpp
+142fc13f7e13ea67a3618e711d4f7c2b *src/mbart.cpp

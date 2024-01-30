@@ -403,7 +403,7 @@ void mbart(int *iNumObs, int *iNumX, int *inrowTest,
    Rprintf("Variable Usage, last iteration (var:count):\n");
    countVarUsage(theTrees,varcnt);
    for(ivs i=1;i<varcnt.size();i++) {  
-      Rprintf("(%d: %d) ",i,varcnt[i]);
+       Rprintf("(%d: %d) ",(int)i,varcnt[i]);
       if(i%5 == 0) Rprintf("\n");
    }
 
